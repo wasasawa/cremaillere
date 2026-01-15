@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Erreur système</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            overflow: hidden;
+            font-family: monospace;
+            cursor: none;
+        }
+
+        /* ============================================
+           PHASE 1: BSOD (Blue Screen of Death)
+           ============================================ */
+        #bsod {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #0078d7;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 50px;
+            z-index: 1000;
+        }
+
+        #bsod .sad-face {
+            font-size: 120px;
+            margin-bottom: 30px;
+        }
+
+        #bsod h1 {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            font-size: 28px;
+            font-weight: 300;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        #bsod p {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            font-size: 16px;
+            font-weight: 300;
+            max-width: 800px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        #bsod .progress-container {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        #bsod .progress-text {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            font-size: 16px;
+        }
+
+        /* ============================================
+           PHASE 2: NOSCOPE VIDEO
+           ============================================ */
+        #noscope {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: black;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            overflow: hidden;
+        }
+
+        #noscope video,
+        #noscope img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+.noscope-text {
+    position: absolute;
+    top: 20px;
+    
+    transform: translateX(-50%);
+    
+    font-family: 'Impact', 'Arial Black', sans-serif;
+    font-size: 55px;
+    color: #00ff00;
+    text-shadow: 
+        0 0 10px #00ff00,
+        0 0 20px #00ff00,
+        0 0 40px #00ff00,
+        4px 4px 0 #ff0000,
+        -4px -4px 0 #0000ff;
+
+    z-index: 10;
+    text-align: center;
+    white-space: nowrap;    /* 🔥 empêche le saut de ligne */
+    overflow: visible;
+
+    animation: shake 0.1s infinite, rainbow 0.5s infinite;
+    padding: 10px 20px;
+    pointer-events: none;
+}
+
+        /* Effet de flash blanc au moment du drop */
+        #flash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: white;
+            display: none;
+            z-index: 1001;
+            animation: flash-anim 0.15s ease-out forwards;
+        }
+
+        @keyframes flash-anim {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* ============================================
+           PHASE 3: MLG REVEAL
+           ============================================ */
+        #mlg-reveal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: black;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            z-index: 998;
+            overflow: hidden;
+        }
+
+        #mlg-reveal .main-text {
+            font-family: 'Impact', 'Arial Black', sans-serif;
+            font-size: 55px;
+            color: #00ff00;
+            text-shadow: 
+                0 0 10px #00ff00,
+                0 0 20px #00ff00,
+                0 0 40px #00ff00,
+                4px 4px 0 #ff0000,
+                -4px -4px 0 #0000ff;
+            z-index: 10;
+            text-align: center;
+            animation: shake 0.1s infinite, rainbow 0.5s infinite;
+            padding: 15px 20px;
+            margin-top: 8px;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(-5px, 5px) rotate(-2deg); }
+            50% { transform: translate(5px, -5px) rotate(2deg); }
+            75% { transform: translate(-5px, -5px) rotate(-1deg); }
+        }
+
+        @keyframes rainbow {
+            0% { color: #ff0000; }
+            16% { color: #ff8800; }
+            33% { color: #ffff00; }
+            50% { color: #00ff00; }
+            66% { color: #0088ff; }
+            83% { color: #8800ff; }
+            100% { color: #ff0000; }
+        }
+
+        /* Memes flottants - BASE */
+        .meme {
+            position: absolute;
+            object-fit: contain;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        /* Animation: POP */
+        .meme-pop {
+            animation: anim-pop 0.5s ease-out forwards;
+        }
+        @keyframes anim-pop {
+            0% { opacity: 0; transform: translateX(-50%) scale(0); }
+            50% { transform: translateX(-50%) scale(1.3); }
+            100% { opacity: 1; transform: translateX(-50%) scale(1); }
+        }
+        .meme-pop:not([style*="translateX"]) {
+            animation: anim-pop-nocenter 0.5s ease-out forwards;
+        }
+        @keyframes anim-pop-nocenter {
+            0% { opacity: 0; transform: scale(0); }
+            50% { transform: scale(1.3); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* Animation: DROP */
+        .meme-drop {
+            animation: anim-drop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        @keyframes anim-drop {
+            0% { opacity: 0; margin-top: -200px; }
+            100% { opacity: 1; margin-top: 0; }
+        }
+
+        /* Animation: SLIDE-LEFT */
+        .meme-slide-left {
+            animation: anim-slide-left 0.5s ease-out forwards;
+        }
+        @keyframes anim-slide-left {
+            0% { opacity: 0; transform: translateX(-100vw); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Animation: SLIDE-RIGHT */
+        .meme-slide-right {
+            animation: anim-slide-right 0.5s ease-out forwards;
+        }
+        @keyframes anim-slide-right {
+            0% { opacity: 0; transform: translateX(100vw); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Animation: SPIN */
+        .meme-spin {
+            animation: anim-spin 0.6s ease-out forwards;
+        }
+        @keyframes anim-spin {
+            0% { opacity: 0; transform: scale(0) rotate(0deg); }
+            100% { opacity: 1; transform: scale(1) rotate(720deg); }
+        }
+
+        /* Animation: BOUNCE */
+        .meme-bounce {
+            animation: anim-bounce 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        @keyframes anim-bounce {
+            0% { opacity: 0; transform: translateX(-50%) translateY(100px); }
+            50% { transform: translateX(-50%) translateY(-30px); }
+            70% { transform: translateX(-50%) translateY(10px); }
+            100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        /* Effets visuels MLG */
+        .lens-flare {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: flare 0.3s ease-out;
+        }
+
+        @keyframes flare {
+            0% { transform: scale(0); opacity: 1; }
+            100% { transform: scale(3); opacity: 0; }
+        }
+
+        .hitmarker {
+            position: absolute;
+            font-size: 80px;
+            color: white;
+            pointer-events: none;
+            animation: hitmarker-anim 0.2s ease-out forwards;
+        }
+
+        @keyframes hitmarker-anim {
+            0% { transform: scale(2); opacity: 1; }
+            100% { transform: scale(1); opacity: 0; }
+        }
+
+        /* ============================================
+           PHASE 4: TERMINAL
+           ============================================ */
+        #terminal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #0a0a0a;
+            display: none;
+            flex-direction: column;
+            padding: 20px;
+            z-index: 997;
+            cursor: text;
+        }
+
+        #terminal-header {
+            background: #2d2d2d;
+            padding: 10px 15px;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #terminal-header .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        #terminal-header .dot.red { background: #ff5f56; }
+        #terminal-header .dot.yellow { background: #ffbd2e; }
+        #terminal-header .dot.green { background: #27ca40; }
+
+        #terminal-header .title {
+            color: #888;
+            margin-left: 10px;
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+            font-size: 13px;
+        }
+
+        #terminal-content {
+            flex: 1;
+            background: #1a1a1a;
+            border-radius: 0 0 8px 8px;
+            padding: 20px;
+            overflow-y: auto;
+            font-family: 'SF Mono', 'Monaco', 'Consolas', 'Liberation Mono', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .terminal-line {
+            color: #00ff00;
+            margin-bottom: 5px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .terminal-line.output { color: #ffffff; }
+        .terminal-line.error { color: #ff6b6b; }
+        .terminal-line.success { color: #69ff69; }
+        .terminal-line.highlight { color: #ffff00; }
+        .terminal-line.ascii {
+            color: #00ffff;
+            font-size: 10px;
+            line-height: 1.2;
+        }
+
+        #input-line {
+            display: flex;
+            align-items: center;
+            color: #00ff00;
+        }
+
+        #input-line .prompt { color: #ff6b6b; margin-right: 5px; }
+        #input-line .user { color: #69ff69; }
+        #input-line .separator { color: #888; margin: 0 5px; }
+        #input-line .path { color: #6b9fff; }
+        #input-line .dollar { color: #888; margin: 0 8px 0 5px; }
+
+        #terminal-input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #ffffff;
+            font-family: inherit;
+            font-size: inherit;
+            flex: 1;
+            caret-color: #00ff00;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            #bsod h1 { font-size: 20px; }
+            #bsod p { font-size: 14px; }
+            #bsod .sad-face { font-size: 80px; }
+            #mlg-reveal .main-text { font-size: 28px; }
+            #terminal-content { font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- PHASE 1: BSOD -->
+    <div id="bsod">
+        <div class="sad-face">.|.</div>
+        <h1>Your PC ran into a problem and needs to restart.</h1>
+        <p>We're just collecting some error info, and then we'll restart for you.</p>
+        <div class="progress-container">
+            <span class="progress-text"><span id="progress">0</span>% complete</span>
+        </div>
+        <p style="margin-top: 40px; font-size: 14px;">
+            For more information about this issue and possible fixes, visit<br>
+            https://www.xXxFurryp0rnXxX.gouv.fr/bsod
+        </p>
+        <p style="font-size: 14px;">
+            If you call a support person, give them this info:<br>
+            Stop code: INVITATION_NOT_FOUND
+        </p>
+    </div>
+
+    <!-- FLASH EFFECT -->
+    <div id="flash"></div>
+
+    <!-- PHASE 2: NOSCOPE VIDEO -->
+    <div id="noscope">
+        <!-- 
+        =============================================
+        🎮 VIDÉO NOSCOPE - MODIFIE ICI !
+        
+        Option 1: GIF (recommandé - plus léger)
+        Trouve un GIF sur Tenor/Giphy, clic droit → copier l'adresse
+        Exemple Tenor: https://media.tenor.com/XXXXX/XXXXX.gif
+        
+        <img id="noscope-media" src="TON_URL_ICI.gif" alt="360 noscope">
+        
+        Option 2: Vidéo MP4
+        <video id="noscope-media" autoplay muted>
+            <source src="noscope.mp4" type="video/mp4">
+        </video>
+        =============================================
+        -->
+	<!--  <img id="noscope-media" src="https://media.tenor.com/x8v1oNUOmg4AAAAd/mlg-360.gif" alt="360 noscope"> -->
+
+    <div class="main-text noscope-text">
+        JK T'ES INVITÉ(E) À MA CRÉMAILLÈRE
+    </div>
+
+
+        <video id="noscope-media" autoplay muted>
+    <source src="mlgF.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <!-- PHASE 3: MLG REVEAL -->
+    <div id="mlg-reveal">
+        <div class="main-text">
+            JK T'ES INVITÉ(E) À MA CRÉMAILLÈRE
+        </div>
+    </div>
+
+    <!-- PHASE 4: TERMINAL -->
+    <div id="terminal">
+        <div id="terminal-header">
+            <div class="dot red"></div>
+            <div class="dot yellow"></div>
+            <div class="dot green"></div>
+            <span class="title">invitation@cremaillere: ~</span>
+        </div>
+        <div id="terminal-content">
+            <div id="terminal-output"></div>
+            <div id="input-line">
+                <span class="prompt">┌──(</span><span class="user">invité</span><span class="separator">㉿</span><span class="path">cremaillere</span><span class="prompt">)</span><span class="prompt">-[</span><span class="path">~/infos</span><span class="prompt">]</span><br>
+                <span class="prompt">└─</span><span class="dollar">$</span>
+                <input type="text" id="terminal-input" autofocus autocomplete="off" spellcheck="false">
+            </div>
+        </div>
+    </div>
+
+    <!-- 
+    =============================================
+    🔊 AUDIO - MODIFIE ICI !
+    
+    Pour "My Hope Will Never Die" ou autre:
+    1. Télécharge juste la partie buildup + drop (genre 0:35 à 0:55)
+    2. Mets le fichier dans le même dossier
+    3. Décommente la ligne ci-dessous
+    
+    Le timing dans CONFIG est réglé pour:
+    - BSOD pendant le buildup
+    - Drop = transition vers noscope
+    =============================================
+    -->
+    <audio id="main-sound" preload="auto">
+	 <source src="mlg1.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // ============================================
+        // 📝 CONFIGURATION - MODIFIE ICI !
+        // ============================================
+        const CONFIG = {
+            // Infos de la soirée
+            date: "Samedi 17 Janvier 2025",
+            heure: "20h00",
+            lieu: "12 rue des ormeaux, 35000 Rennes",
+            metro: "Métro A / Métro B / bus C2 / Vélos / Demerdez vous, 2 jusqu'à 3 places pour dodo dans l'appart si besoin",
+            quoiRamener: "Bouffe, Boissons alcoolisés ou pas (préférablement oui), Cadeaux et drogues bien sûr",
+            dresscode: "Pyjama",
+            contact: "07 72 37 95 51 (pour confirmer ta venue ou si t'es perdu)",
+            hote: "Ta mère",
+            messageSurprise: "Y'aura des gens, des boissons, de la musique, et surtout un keuf qui habite juste au-dessus 🎉",
+
+
+	durations: {
+                bsod: 4000,         // Durée du BSOD (pendant le buildup)
+                noscope: 2500,      // Durée de la vidéo noscope (au moment du drop)
+                mlg: 8000           // Durée du MLG reveal avec Snoop
+            }
+        };
+
+        // ============================================
+        // PHASE 1: BSOD Animation
+        // ============================================
+        let progress = 0;
+        const progressEl = document.getElementById('progress');
+        
+        // Jouer le son dès le début (pendant le BSOD)
+        const mainSound = document.getElementById('main-sound');
+        mainSound.play().catch(e => console.log('Audio autoplay bloqué - clic pour activer'));
+        
+        // Permettre de démarrer le son au clic si autoplay bloqué
+        document.body.addEventListener('click', () => {
+            if (mainSound.paused) {
+                mainSound.play();
+            }
+        }, { once: true });
+
+        const progressInterval = setInterval(() => {
+            progress += Math.random() * 8;
+            if (progress >= 100) {
+                progress = 100;
+                clearInterval(progressInterval);
+            }
+            progressEl.textContent = Math.floor(progress);
+        }, CONFIG.durations.bsod / 15);
+
+        // Transition vers Phase 2 (Noscope) au moment du drop
+        setTimeout(() => {
+            document.getElementById('bsod').style.display = 'none';
+            startNoscope();
+        }, CONFIG.durations.bsod);
+
+        // ============================================
+        // PHASE 2: Noscope Video
+        // ============================================
+        function startNoscope() {
+            // Flash blanc au moment du drop
+            const flash = document.getElementById('flash');
+            flash.style.display = 'block';
+            setTimeout(() => flash.style.display = 'none', 150);
+
+            const noscope = document.getElementById('noscope');
+            noscope.style.display = 'flex';
+
+            // Si c'est une vidéo, la jouer
+            const media = document.getElementById('noscope-media');
+            if (media.tagName === 'VIDEO') {
+                media.currentTime = 0;
+                media.play();
+            }
+
+            // Transition vers MLG Reveal
+            setTimeout(() => {
+                noscope.style.display = 'none';
+                startMLGReveal();
+            }, CONFIG.durations.noscope);
+        }
+
+        // ============================================
+        // PHASE 3: MLG Reveal
+        // ============================================
+        function startMLGReveal() {
+            const mlg = document.getElementById('mlg-reveal');
+            mlg.style.display = 'flex';
+
+            // ============================================
+            // 🖼️ MEMES - MODIFIE ICI !
+            // ============================================
+            const MEME_SEQUENCE = [   
+                // SNOOP DOGG
+                {
+                    src: 'https://i.imgur.com/YnR2Vb7.png',  
+                    delay: 0,
+                    position: { top: '15%', left: '50%' },
+                    size: 800,
+                    animation: 'pop',
+                    centerX: true,
+                },
+                
+                // LUNETTES
+                {
+                    src: 'https://i.imgur.com/a8LuGBH.png',
+                    delay: 1200,
+                    position: { top: '39%', left: '90%' },
+                    size: 200,
+                    animation: 'drop',
+                    centerX: true,
+                },
+                
+                // DORITOS
+                {
+                    src: 'https://i.imgur.com/0n9bD6Q.png',
+                    delay: 400,
+                    position: { top: '45%', left: '3%' },
+                    size: 150,
+                    animation: 'spin',
+                },
+                
+                // KEKW
+                {
+                    src: 'https://media.tenor.com/zx3Uq-flpJsAAAAe/kekw.png',  
+                    delay: 600,
+                    position: { top: '45%', right: '3%' },
+                    size: 130,
+                    animation: 'spin',
+                },
+                
+                // ILLUMINATI
+                {
+                    src: 'https://i.imgur.com/D5ly7Hu.png',
+                    delay: 1600,
+                    position: { bottom: '8%', left: '8%' },
+                    size: 130,
+                    animation: 'pop',
+                },
+                
+                // AUTRE MEME
+                {
+                    src: 'https://i.imgur.com/N7OJJTL.png',  
+                    delay: 1800,
+                    position: { bottom: '8%', right: '8%' },
+                    size: 140,
+                    animation: 'slide-right',
+                },
+                
+                // EN BAS
+                {
+                    src: 'https://i.imgur.com/reQdzAS.png', 
+                    delay: 2000,
+                    position: { bottom: '3%', left: '50%' },
+                    size: 200,
+                    animation: 'bounce',
+                    centerX: true,
+                },
+            ];
+
+            MEME_SEQUENCE.forEach(meme => {
+                setTimeout(() => spawnChoreographedMeme(meme), meme.delay);
+            });
+
+            for (let i = 0; i < 6; i++) {
+                setTimeout(() => spawnHitmarker(), i * 600 + 1000);
+            }
+
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => spawnLensFlare(), i * 800 + 600);
+            }
+
+            setTimeout(() => {
+                mlg.style.display = 'none';
+                mainSound.pause();
+                startTerminal();
+            }, CONFIG.durations.mlg);
+        }
+
+        function spawnChoreographedMeme(config) {
+            const mlg = document.getElementById('mlg-reveal');
+            const meme = document.createElement('img');
+            meme.className = 'meme meme-' + config.animation;
+            meme.src = config.src;
+            meme.style.width = config.size + 'px';
+            meme.style.height = 'auto';
+            
+            if (config.position.top) meme.style.top = config.position.top;
+            if (config.position.bottom) meme.style.bottom = config.position.bottom;
+            if (config.position.left) meme.style.left = config.position.left;
+            if (config.position.right) meme.style.right = config.position.right;
+            
+            if (config.centerX) {
+                meme.style.transform = 'translateX(-50%)';
+            }
+            
+            mlg.appendChild(meme);
+        }
+
+        function spawnHitmarker() {
+            const mlg = document.getElementById('mlg-reveal');
+            const hit = document.createElement('div');
+            hit.className = 'hitmarker';
+            hit.textContent = '✕';
+            hit.style.left = Math.random() * 80 + 10 + '%';
+            hit.style.top = Math.random() * 80 + 10 + '%';
+            mlg.appendChild(hit);
+            setTimeout(() => hit.remove(), 300);
+        }
+
+        function spawnLensFlare() {
+            const mlg = document.getElementById('mlg-reveal');
+            const flare = document.createElement('div');
+            flare.className = 'lens-flare';
+            flare.style.left = Math.random() * 100 + '%';
+            flare.style.top = Math.random() * 100 + '%';
+            mlg.appendChild(flare);
+            setTimeout(() => flare.remove(), 400);
+        }
+
+        // ============================================
+        // PHASE 4: Terminal
+        // ============================================
+        function startTerminal() {
+            const terminal = document.getElementById('terminal');
+            terminal.style.display = 'flex';
+            
+            const input = document.getElementById('terminal-input');
+            
+            const welcomeMsg = `
+<span class="success">╔════════════════════════════════════════════════════════════╗</span>
+<span class="success">║                                                            ║</span>
+<span class="success">║   🏠 BIENVENUE SUR LE SERVEUR DE LA CRÉMAILLÈRE DE ${CONFIG.hote.toUpperCase()}   ║</span>
+<span class="success">║                                                            ║</span>
+<span class="success">╚════════════════════════════════════════════════════════════╝</span>
+
+<span class="output">Tape </span><span class="highlight">'help'</span><span class="output"> pour voir les commandes disponibles.</span>
+`;
+            addOutput(welcomeMsg);
+            
+            input.focus();
+            terminal.addEventListener('click', () => input.focus());
+            
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    const cmd = input.value.trim().toLowerCase();
+                    processCommand(cmd);
+                    input.value = '';
+                }
+            });
+        }
+
+        function addOutput(html) {
+            const output = document.getElementById('terminal-output');
+            const line = document.createElement('div');
+            line.className = 'terminal-line';
+            line.innerHTML = html;
+            output.appendChild(line);
+            
+            const content = document.getElementById('terminal-content');
+            content.scrollTop = content.scrollHeight;
+        }
+
+        function addCommandEcho(cmd) {
+            addOutput(`<span class="prompt">┌──(</span><span class="user">invité</span><span class="separator">㉿</span><span class="path">cremaillere</span><span class="prompt">)-[</span><span class="path">~/infos</span><span class="prompt">]</span>
+<span class="prompt">└─</span><span class="dollar">$</span> ${cmd}`);
+        }
+
+        function processCommand(cmd) {
+            addCommandEcho(cmd);
+            
+            const commands = {
+                'help': () => `
+<span class="highlight">Commandes disponibles:</span>
+<span class="output">  date       </span><span class="success">→</span><span class="output"> Quand ça se passe</span>
+<span class="output">  lieu       </span><span class="success">→</span><span class="output"> Où ça se passe</span>
+<span class="output">  ramener    </span><span class="success">→</span><span class="output"> Quoi ramener</span>
+<span class="output">  dresscode  </span><span class="success">→</span><span class="output"> Comment s'habiller</span>
+<span class="output">  contact    </span><span class="success">→</span><span class="output"> Numéro pour confirmer</span>
+<span class="output">  surprise   </span><span class="success">→</span><span class="output"> ???</span>
+<span class="output">  all        </span><span class="success">→</span><span class="output"> Toutes les infos d'un coup</span>
+<span class="output">  clear      </span><span class="success">→</span><span class="output"> Nettoyer le terminal</span>
+`,
+                'date': () => `
+<span class="highlight">📅 DATE & HEURE</span>
+<span class="output">${CONFIG.date}</span>
+<span class="output">À partir de ${CONFIG.heure}</span>
+`,
+                'lieu': () => `
+<span class="highlight">📍 LIEU</span>
+<span class="output">${CONFIG.lieu}</span>
+<span class="output">${CONFIG.metro}</span>
+`,
+                'ramener': () => `
+<span class="highlight">🎒 QUOI RAMENER</span>
+<span class="output">${CONFIG.quoiRamener}</span>
+`,
+                'dresscode': () => `
+<span class="highlight">👕 DRESS CODE</span>
+<span class="output">${CONFIG.dresscode}</span>
+`,
+                'contact': () => `
+<span class="highlight">📱 CONTACT</span>
+<span class="output">${CONFIG.contact}</span>
+`,
+                'surprise': () => `
+<span class="ascii">
+   🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉
+</span>
+<span class="success">${CONFIG.messageSurprise}</span>
+<span class="ascii">
+   🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉
+</span>
+`,
+                'all': () => `
+<span class="highlight">═══════════════════════════════════════</span>
+<span class="highlight">   RÉCAP' COMPLET DE LA SOIRÉE</span>
+<span class="highlight">═══════════════════════════════════════</span>
+
+<span class="highlight">📅 QUAND</span>
+<span class="output">${CONFIG.date} à ${CONFIG.heure}</span>
+
+<span class="highlight">📍 OÙ</span>
+<span class="output">${CONFIG.lieu}</span>
+<span class="output">${CONFIG.metro}</span>
+
+<span class="highlight">🎒 QUOI RAMENER</span>
+<span class="output">${CONFIG.quoiRamener}</span>
+
+<span class="highlight">👕 DRESS CODE</span>
+<span class="output">${CONFIG.dresscode}</span>
+
+<span class="highlight">📱 CONTACT</span>
+<span class="output">${CONFIG.contact}</span>
+
+<span class="success">À très vite ! 🎉</span>
+`,
+                'clear': () => {
+                    document.getElementById('terminal-output').innerHTML = '';
+                    return '';
+                }
+            };
+
+            const easterEggs = {
+                'sudo': `<span class="error">[sudo] permission denied: t'es pas chez toi ici 😏</span>`,
+                'rm -rf': `<span class="error">Nice try... La soirée est toujours là 😎</span>`,
+                'exit': `<span class="error">Tu peux pas exit, t'es obligé de venir !</span>`,
+                'ls': `<span class="output">bonne_ambiance.exe  musique/  drinks/  bouffe/  potes/</span>`,
+                'pwd': `<span class="output">/home/${CONFIG.hote}/cremaillere/best_soiree_ever</span>`,
+                'whoami': `<span class="output">Un(e) invité(e) VIP à la crémaillère de ${CONFIG.hote} 🌟</span>`,
+                'cd': `<span class="output">Tu vas nulle part, reste ici !</span>`,
+                'cat': `<span class="ascii">
+  /\\_/\\  
+ ( o.o ) 
+  > ^ <   Miaou ! Viens à la crémaillère !
+</span>`,
+                'ping': `<span class="output">PING cremaillere.${CONFIG.hote}.fr: 64 bytes - temps=0ms (c'est bientôt !)</span>`,
+                'hello': `<span class="success">Hey ! Content(e) que tu sois là 👋</span>`,
+                'salut': `<span class="success">Salut à toi futur(e) invité(e) ! 🎉</span>`,
+                'oui': `<span class="success">YES ! Hâte de te voir ! 🙌</span>`,
+                'non': `<span class="error">😢 Allez stp... (tape 'oui' pour changer d'avis)</span>`,
+            };
+
+            let response;
+            
+            if (commands[cmd]) {
+                response = commands[cmd]();
+            } else if (easterEggs[cmd]) {
+                response = easterEggs[cmd];
+            } else if (cmd === '') {
+                response = '';
+            } else {
+                response = `<span class="error">Commande '${cmd}' non reconnue. Tape 'help' pour voir les commandes.</span>`;
+            }
+
+            if (response) {
+                addOutput(response);
+            }
+        }
+    </script>
+</body>
+</html>
